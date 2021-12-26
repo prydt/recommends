@@ -1,4 +1,4 @@
-from flask import Flask, session
+from flask import Flask, session, send_file
 from flask_login import LoginManager, UserMixin, login_required, logout_user, current_user
 import sqlite3
 from flask_sqlalchemy import SQLAlchemy
@@ -8,6 +8,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = b'5cc3b1d033e1c56c84376684a9a6122de864f1cd5da93f540e127e0a0caf2e1e'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///recommends.db'
 
+"""
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -20,13 +21,19 @@ class User(UserMixin, db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+"""
 
 
 # main routes
 @app.route('/')
 def index():
     # serves main page
-    pass
+    return send_file("index.html")
+
+@app.route('/<user_name>')
+def user_page(user_name):
+    # Serves a user's Recommends page
+    return send_file("user_page.html")
 
 # logouts user
 @app.route('/logout')
@@ -34,5 +41,7 @@ def index():
 def logout():
     logout_user()
 
-if __name__ == '__name__':
+if __name__ == '__main__':
     app.run(debug=True)
+
+    # TODO make sure a user can't make their username "login", "logout", "signup", "static", "data", or any other url used specifically by the server

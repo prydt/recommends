@@ -140,3 +140,7 @@ table.recommendation-table td {
     min-width: 300px;
     max-width: 800px;
 }
+
+#recommendation-table-div {
+    margin-bottom: 100px;
+}
