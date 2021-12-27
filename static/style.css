@@ -144,3 +144,7 @@ table.recommendation-table td {
 #recommendation-table-div {
     margin-bottom: 100px;
 }
+
+.error {
+    color: red;
+}

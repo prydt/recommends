@@ -10,6 +10,9 @@
 <body>
     <div id="content">
         <h1>Recommends</h1>
+        {% if error is defined %}
+            <p class="error"> {{ error }} </p>
+        {% endif %}
         <form action="/login" method="post">
             <input type="text" placeholder="username" name="uname" id="username">
             <input placeholder="password" type="password" name="psw" id="password">
