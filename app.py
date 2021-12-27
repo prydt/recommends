@@ -1,6 +1,5 @@
 from flask import Flask, session, send_file, request, flash, redirect, render_template
 from flask_login import LoginManager, UserMixin, login_required, logout_user, current_user, login_user
-import sqlite3
 from flask_sqlalchemy import SQLAlchemy
 import nacl.pwhash
 import test_data
@@ -14,38 +13,37 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-class User(UserMixin, db.Model):
+class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(15), unique=True)
     hash = db.Column(db.BINARY)
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return Users.query.get(int(user_id))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return send_file('login.html')
-    else:
-        username = request.form['uname']
-        password = request.form['psw']
-        user = User.query.filter_by(username=username)
-        if user is None:
-            flash('error: invalid username', 'error')
-            # TODO return something
+        return render_template('login.html.jinja')
 
-        h = nacl.pwhash.str(password)
-        if h != user.hash:
-            flash('error: invalid password', 'error')
-            # TODO return something
-        
-        # username and password are valid
-        login_user(user)
-        return redirect(f'/{user.username}')
+    username = request.form['uname']
+    password = request.form['psw']
+    print(f'username = {username}, password = {password}')
+    user = Users.query.filter_by(username=username).first()
+    print(user)
+    if user is None:
+        # flash('error: invalid username', 'error')
+        return render_template('login.html.jinja', error='error: invalid username')
 
-    # TODO return something, have some sort of error
-
+    h = nacl.pwhash.str(bytes(password, 'utf-8'))
+    if h != user.hash:
+        # flash('error: invalid password', 'error')
+        return render_template('login.html.jinja', error='error: invalid password')
+    
+    # username and password are valid
+    login_user(user)
+    return redirect(f'/{user.username}')
 
 
 # main routes
