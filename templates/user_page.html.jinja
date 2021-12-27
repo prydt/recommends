@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user_data.username }} recommends...</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <!--
+        TODO if the user is logged in and viewing their own homepage, there will be an edit button
+        cursor: pointer and they can click on their lists to edit them
+    -->
+    <div id="content">
+        <h1>Recommends</h1>
+        <h2 id="user-recommends">{{ user_data.username }} recommends...</h2>
+        <div id="recommendation-table-div">
+            {% for category in user_data.recommendations %}
+            <table class="recommendation-table">
+                <tr><th>{{ category }}</th></tr>
+                {% for recommendation in user_data.recommendations[category] %}
+                <tr><td>{{ recommendation }}</td></tr>
+                {% endfor %}
+            </table>
+            {% endfor %}
+        </div>
+    </div>
+    <script>
+            // Make recommendation tables
+            for (let category in userData["recommendations"])
+            {
+                let table = document.createElement("table")
+                table.className = "recommendation-table"
+
+                table.innerHTML = "<tr><th>" + category + "</th></tr>\n<tr><td>" + 
+                    userData["recommendations"][category].join("</tr></td>\n<tr><td>") + 
+                    "</tr></td>"
+
+                document.getElementById("recommendation-table-div").appendChild(table)
+            }
+    </script>
+</body>
+</html>

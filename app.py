@@ -1,7 +1,8 @@
-from flask import Flask, session, send_file
+from flask import Flask, session, send_file, render_template
 from flask_login import LoginManager, UserMixin, login_required, logout_user, current_user
 import sqlite3
 from flask_sqlalchemy import SQLAlchemy
+import test_data
 
 app = Flask(__name__)
 #TODO make an ENV var
@@ -33,7 +34,7 @@ def index():
 @app.route('/<user_name>')
 def user_page(user_name):
     # Serves a user's Recommends page
-    return send_file("user_page.html")
+    return render_template("user_page.html.jinja", user_data=test_data.data)
 
 # logouts user
 @app.route('/logout')
