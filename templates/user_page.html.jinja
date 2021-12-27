@@ -26,19 +26,5 @@
             {% endfor %}
         </div>
     </div>
-    <script>
-            // Make recommendation tables
-            for (let category in userData["recommendations"])
-            {
-                let table = document.createElement("table")
-                table.className = "recommendation-table"
-
-                table.innerHTML = "<tr><th>" + category + "</th></tr>\n<tr><td>" + 
-                    userData["recommendations"][category].join("</tr></td>\n<tr><td>") + 
-                    "</tr></td>"
-
-                document.getElementById("recommendation-table-div").appendChild(table)
-            }
-    </script>
 </body>
 </html>

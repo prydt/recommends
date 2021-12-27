@@ -57,12 +57,16 @@ def index():
 @app.route('/<user_name>')
 def user_page(user_name):
     # Serves a user's Recommends page
-    return render_template("user_page.html.jinja", user_data=test_data.data)
+    # TODO user_data = jsonified data from the database
+    # TODO editable = True is user is logged in and viewing their own page
+    return render_template("user_page.html.jinja", user_data=test_data.data, editable=True, is_editing=False)
 
 @app.route('/edit')
 @login_required
-def edit():
-    pass
+def edit_user_page():
+    # Edit a user's own Recommends page
+    # TODO user_data = jsonified data from the database
+    return render_template("user_page.html.jinja", user_data=test_data.data, is_editing=True)
 
 # logouts user
 @app.route('/logout')
