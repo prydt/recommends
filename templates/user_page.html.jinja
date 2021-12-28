@@ -7,24 +7,47 @@
     <title>{{ user_data.username }} recommends...</title>
     <link rel="stylesheet" href="static/style.css">
 </head>
-<body>
-    <!--
-        TODO if the user is logged in and viewing their own homepage, there will be an edit button
-        cursor: pointer and they can click on their lists to edit them
-    -->
+<body onload="onload()">
     <div id="content">
         <h1>Recommends</h1>
         <h2 id="user-recommends">{{ user_data.username }} recommends...</h2>
+        {% if is_editing %}
+        <a href="/{{ user_data.username }}"><button id="save-button">Save</button></a>
+        {% elif editable %}
+        <a href="/edit"><button id="edit-button">Edit</button></a>
+        {% endif %}
+
         <div id="recommendation-table-div">
             {% for category in user_data.recommendations %}
-            <table class="recommendation-table">
-                <tr><th>{{ category }}</th></tr>
+            <table class="recommendation-table" rec-table-index="{{ loop.index - 1 }}">
+                <tr><th class="rec-table-category" {% if is_editing %}contenteditable="true" spellcheck="false" {% endif %}>{{ category }}</th></tr>
                 {% for recommendation in user_data.recommendations[category] %}
-                <tr><td>{{ recommendation }}</td></tr>
+                <tr><td class="rec-table-item" rec-table-item-index="{{ loop.index - 1 }}" {% if is_editing %}contenteditable="true" spellcheck="false" {% endif %}>{{ recommendation }}</td></tr>
                 {% endfor %}
             </table>
             {% endfor %}
         </div>
     </div>
+
+    {% if is_editing %}
+    <script>
+        function onload()
+        {
+            for (let field of document.getElementsByClassName("rec-table-category"))
+            {
+                field.addEventListener("keydown", onFieldEdit)
+            }
+            for (let field of document.getElementsByClassName("rec-table-item"))
+            {
+                field.addEventListener("keydown", onFieldEdit)
+            }
+        }
+
+        function onFieldEdit (event)
+        {
+            console.log("cool!")
+        }
+    </script>
+    {% endif %}
 </body>
 </html>

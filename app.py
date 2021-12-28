@@ -56,15 +56,22 @@ def index():
 def user_page(user_name):
     # Serves a user's Recommends page
     # TODO user_data = jsonified data from the database
-    # TODO editable = True is user is logged in and viewing their own page
-    return render_template("user_page.html.jinja", user_data=test_data.data, editable=True, is_editing=False)
+    # TODO editable = True if user is logged in and viewing their own page
 
-@app.route('/edit')
-@login_required
+    # TODO colors and hsv to rgb conversion
+    return render_template("user_page.html.jinja", user_data=test_data.data, editable=True, is_editing=False, colors=["fffff", "000000" ])
+
+@app.route('/edit', methods=["GET", "POST"])
+# @login_required
 def edit_user_page():
     # Edit a user's own Recommends page
     # TODO user_data = jsonified data from the database
-    return render_template("user_page.html.jinja", user_data=test_data.data, is_editing=True)
+    if request.method == "GET":
+        return render_template("user_page.html.jinja", user_data=test_data.data, is_editing=True)
+    else:
+        # TODO add the request data to the user's database entry
+        # TODO redirect the user to their own page
+        return "<p>editing complete</p>"
 
 # logouts user
 @app.route('/logout')

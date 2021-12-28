@@ -148,3 +148,10 @@ table.recommendation-table td {
 .error {
     color: red;
 }
+
+#edit-button, #save-button {
+    font-size: 20px;
+    padding: 5px;
+    min-width: 80px;
+    cursor: pointer;
+}
