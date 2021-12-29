@@ -20,8 +20,8 @@
         <div id="recommendation-table-div">
             {% for category in user_data.recommendations %}
             <table class="recommendation-table">
-                <tr><th class="rec-table-category" {% if is_editing %} contenteditable="true" spellcheck="false" {% endif %}>{{ category }}</th></tr>
-                {% for recommendation in user_data.recommendations[category] %}
+                <tr><th class="rec-table-category" {% if is_editing %} contenteditable="true" spellcheck="false" {% endif %}>{{ user_data.recommendationCategories[loop.index - 1] }}</th></tr>
+                {% for recommendation in category %}
                 <tr><td class="rec-table-item" {% if is_editing %} contenteditable="true" spellcheck="false" {% endif %}>{{ recommendation }}</td></tr>
                 {% endfor %}
             </table>
