@@ -139,6 +139,7 @@ table.recommendation-table td {
     padding-right: 10px;
     min-width: 300px;
     max-width: 800px;
+    height: 27px;
 }
 
 #recommendation-table-div {

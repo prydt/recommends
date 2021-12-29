@@ -19,10 +19,11 @@
 
         <div id="recommendation-table-div">
             {% for category in user_data.recommendations %}
-            <table class="recommendation-table" rec-table-index="{{ loop.index - 1 }}">
-                <tr><th class="rec-table-category" {% if is_editing %}contenteditable="true" spellcheck="false" {% endif %}>{{ category }}</th></tr>
+            {% set outer_loop = loop %}
+            <table class="recommendation-table rec-table-index={{ loop.index - 1 }}">
+                <tr><th class="rec-table-category rec-table-category-index={{ loop.index - 1 }}" {% if is_editing %} contenteditable="true" spellcheck="false" {% endif %}>{{ category }}</th></tr>
                 {% for recommendation in user_data.recommendations[category] %}
-                <tr><td class="rec-table-item" rec-table-item-index="{{ loop.index - 1 }}" {% if is_editing %}contenteditable="true" spellcheck="false" {% endif %}>{{ recommendation }}</td></tr>
+                <tr><td class="rec-table-item rec-table-item-index={{ outer_loop.index - 1 }},{{ loop.index - 1 }}" {% if is_editing %} contenteditable="true" spellcheck="false" {% endif %}>{{ recommendation }}</td></tr>
                 {% endfor %}
             </table>
             {% endfor %}
@@ -45,7 +46,69 @@
 
         function onFieldEdit (event)
         {
-            console.log("cool!")
+            if (event.code === "Enter" || event.code === "NumpadEnter" || event.code === "ArrowDown")
+            {
+                event.preventDefault()
+                if (event.target.classList[0] === "rec-table-category")
+                {
+                    let nextElement = document.getElementsByClassName("rec-table-item-index=" + event.target.classList[1].split("=")[1] + ",0")[0]
+                    nextElement.focus()
+                    cursorToEnd(nextElement)
+                }
+                else if (event.target.classList[0] === "rec-table-item")
+                {
+                    let nextClassName = event.target.classList[1].split(",")[0] + "," + (parseInt(event.target.classList[1].split(",")[1]) + 1)
+                    let nextElement = document.getElementsByClassName(nextClassName)
+                    if (nextElement.length === 0)
+                    {
+                        event.target.parentElement.parentElement.innerHTML += '<tr><td class="rec-table-item ' + nextClassName + '" contenteditable="true" spellcheck="false"></td></tr>'
+                        nextElement = document.getElementsByClassName(nextClassName)[0]
+                        nextElement.addEventListener("keydown", onFieldEdit)
+                    }
+                    else
+                    {
+                        nextElement = nextElement[0]
+                    }
+                    nextElement.focus()
+                    cursorToEnd(nextElement)
+                }
+            }
+            else if (event.code === "ArrowUp" || (event.code === "Backspace" && (event.target.innerHTML === "" || event.target.innerHTML === "<br>")))
+            {
+                event.preventDefault()
+                if (event.target.classList[0] === "rec-table-item")
+                {
+                    let nextClassName = event.target.classList[1].split(",")[0] + "," + (parseInt(event.target.classList[1].split(",")[1]) - 1)
+                    let nextElement = document.getElementsByClassName(nextClassName)
+                    if (nextElement.length === 0)
+                    {
+                        nextElement = document.getElementsByClassName("rec-table-category-index=" + event.target.classList[1].split("=")[1].split(",")[0])[0]
+                    }
+                    else
+                    {
+                        nextElement = nextElement[0]
+                    }
+                    nextElement.focus()
+                    cursorToEnd(nextElement)
+
+                    // Delete an empty row
+                    if (event.target.innerHTML === "" || event.target.innerHTML === "<br>")
+                    {
+                        event.target.remove()
+                    }
+                }
+            }
+        }
+
+        function cursorToEnd (element)
+        {
+            // Move cursor to the end of the text in the row
+            let range = document.createRange()
+            let select = window.getSelection()
+            range.selectNodeContents(element)
+            range.collapse(false)
+            select.removeAllRanges()
+            select.addRange(range)
         }
     </script>
     {% endif %}
