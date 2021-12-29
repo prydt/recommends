@@ -12,7 +12,7 @@
         <h1>Recommends</h1>
         <h2 id="user-recommends">{{ user_data.username }} recommends...</h2>
         {% if is_editing %}
-        <a href="/{{ user_data.username }}"><button id="save-button">Save</button></a>
+        <button id="save-button" onclick="sendData()">Save</button>
         {% elif editable %}
         <a href="/edit"><button id="edit-button">Edit</button></a>
         {% endif %}
@@ -27,6 +27,9 @@
             </table>
             {% endfor %}
         </div>
+        {% if is_editing %}
+        <button id="add-table-button" onclick="addTable()">Add List</button>
+        {% endif %}
     </div>
 
     {% if is_editing %}
@@ -66,7 +69,15 @@
             else if (event.code === "ArrowUp" || (event.code === "Backspace" && (event.target.innerHTML === "" || event.target.innerHTML === "<br>")))
             {
                 event.preventDefault()
-                if (event.target.className === "rec-table-item")
+                if (event.target.className === "rec-table-category" && event.target.parentElement.parentElement.parentElement.getElementsByClassName("rec-table-item").length === 0)
+                {
+                    // Delete an empty table
+                    event.target.removeEventListener("keydown", onFieldEdit)
+                    event.target.parentElement.parentElement.parentElement.remove()
+                    assignTableIds()
+                    reassignTableEventListeners()
+                }
+                else if (event.target.className === "rec-table-item")
                 {
                     let nextId = event.target.id.split(",")[0] + "," + (parseInt(event.target.id.split(",")[1]) - 1)
                     let nextElement = document.getElementById(nextId)
@@ -87,6 +98,21 @@
                     }
                 }
             }
+        }
+
+        function addTable ()
+        {
+            document.getElementById("recommendation-table-div").innerHTML += '' +
+            '<table class="recommendation-table">' +
+                '<tr><th class="rec-table-category" spellcheck="false" contenteditable="true">(Category)</th></tr>' +
+                '<tr><td class="rec-table-item" spellcheck="false" contenteditable="true">(Recommendation)</td></tr>' +
+            '</table>'
+            assignTableIds()
+            reassignTableEventListeners()
+            
+            let newestHeader = document.getElementsByClassName("rec-table-category")[document.getElementsByClassName("rec-table-category").length - 1]
+            newestHeader.focus()
+            cursorToEnd(newestHeader)
         }
 
         function cursorToEnd (element)
@@ -127,6 +153,13 @@
                 field.removeEventListener("keydown", onFieldEdit)
                 field.addEventListener("keydown", onFieldEdit)
             }
+        }
+
+        function sendData ()
+        {
+            // TODO exclude any blank (or <br>) fields; if a table only contains a blank (or <br>) th, exclude the table
+
+            window.location.href = "/{{ user_data.username }}"
         }
     </script>
     {% endif %}

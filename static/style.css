@@ -150,7 +150,7 @@ table.recommendation-table td {
     color: red;
 }
 
-#edit-button, #save-button {
+button {
     font-size: 20px;
     padding: 5px;
     min-width: 80px;
