@@ -59,6 +59,7 @@
                     {
                         event.target.parentElement.parentElement.innerHTML += '<tr><td class="rec-table-item" contenteditable="true" spellcheck="false"></td></tr>'
                         assignTableIds()
+                        reassignTableEventListeners()
                         nextElement = document.getElementById(nextId)
                         nextElement.addEventListener("keydown", onFieldEdit)
                     }
@@ -69,7 +70,7 @@
             else if (event.code === "ArrowUp" || (event.code === "Backspace" && (event.target.innerHTML === "" || event.target.innerHTML === "<br>")))
             {
                 event.preventDefault()
-                if (event.target.className === "rec-table-category" && event.target.parentElement.parentElement.parentElement.getElementsByClassName("rec-table-item").length === 0)
+                if (event.code === "Backspace" && event.target.className === "rec-table-category" && event.target.parentElement.parentElement.parentElement.getElementsByClassName("rec-table-item").length === 0)
                 {
                     // Delete an empty table
                     event.target.removeEventListener("keydown", onFieldEdit)
@@ -89,7 +90,7 @@
                     cursorToEnd(nextElement)
 
                     // Delete an empty row
-                    if (event.target.innerHTML === "" || event.target.innerHTML === "<br>")
+                    if (event.code === "Backspace" && (event.target.innerHTML === "" || event.target.innerHTML === "<br>"))
                     {
                         event.target.removeEventListener("keydown", onFieldEdit)
                         event.target.parentElement.remove()
@@ -166,8 +167,6 @@
                 "recommendations": []
             }
 
-            let categoryCounts = {}
-
             for (let table of document.getElementsByClassName("recommendation-table"))
             {
                 let category = table.getElementsByClassName("rec-table-category")[0].innerHTML
@@ -194,6 +193,7 @@
                 }
             }
 
+            // Send data to the server
             fetch("/edit", {
                 method: "POST",
                 headers: {
