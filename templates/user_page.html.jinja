@@ -19,11 +19,10 @@
 
         <div id="recommendation-table-div">
             {% for category in user_data.recommendations %}
-            {% set outer_loop = loop %}
-            <table class="recommendation-table rec-table-index={{ loop.index - 1 }}">
-                <tr><th class="rec-table-category rec-table-category-index={{ loop.index - 1 }}" {% if is_editing %} contenteditable="true" spellcheck="false" {% endif %}>{{ category }}</th></tr>
+            <table class="recommendation-table">
+                <tr><th class="rec-table-category" {% if is_editing %} contenteditable="true" spellcheck="false" {% endif %}>{{ category }}</th></tr>
                 {% for recommendation in user_data.recommendations[category] %}
-                <tr><td class="rec-table-item rec-table-item-index={{ outer_loop.index - 1 }},{{ loop.index - 1 }}" {% if is_editing %} contenteditable="true" spellcheck="false" {% endif %}>{{ recommendation }}</td></tr>
+                <tr><td class="rec-table-item" {% if is_editing %} contenteditable="true" spellcheck="false" {% endif %}>{{ recommendation }}</td></tr>
                 {% endfor %}
             </table>
             {% endfor %}
@@ -34,14 +33,8 @@
     <script>
         function onload()
         {
-            for (let field of document.getElementsByClassName("rec-table-category"))
-            {
-                field.addEventListener("keydown", onFieldEdit)
-            }
-            for (let field of document.getElementsByClassName("rec-table-item"))
-            {
-                field.addEventListener("keydown", onFieldEdit)
-            }
+            assignTableIds()
+            reassignTableEventListeners()
         }
 
         function onFieldEdit (event)
@@ -49,25 +42,22 @@
             if (event.code === "Enter" || event.code === "NumpadEnter" || event.code === "ArrowDown")
             {
                 event.preventDefault()
-                if (event.target.classList[0] === "rec-table-category")
+                if (event.target.className === "rec-table-category")
                 {
-                    let nextElement = document.getElementsByClassName("rec-table-item-index=" + event.target.classList[1].split("=")[1] + ",0")[0]
+                    let nextElement = document.getElementById("rec-table-item-index=" + event.target.id.split("=")[1] + ",0")
                     nextElement.focus()
                     cursorToEnd(nextElement)
                 }
-                else if (event.target.classList[0] === "rec-table-item")
+                else if (event.target.className === "rec-table-item")
                 {
-                    let nextClassName = event.target.classList[1].split(",")[0] + "," + (parseInt(event.target.classList[1].split(",")[1]) + 1)
-                    let nextElement = document.getElementsByClassName(nextClassName)
-                    if (nextElement.length === 0)
+                    let nextId = event.target.id.split(",")[0] + "," + (parseInt(event.target.id.split(",")[1]) + 1)
+                    let nextElement = document.getElementById(nextId)
+                    if (nextElement === null)
                     {
-                        event.target.parentElement.parentElement.innerHTML += '<tr><td class="rec-table-item ' + nextClassName + '" contenteditable="true" spellcheck="false"></td></tr>'
-                        nextElement = document.getElementsByClassName(nextClassName)[0]
+                        event.target.parentElement.parentElement.innerHTML += '<tr><td class="rec-table-item" contenteditable="true" spellcheck="false"></td></tr>'
+                        assignTableIds()
+                        nextElement = document.getElementById(nextId)
                         nextElement.addEventListener("keydown", onFieldEdit)
-                    }
-                    else
-                    {
-                        nextElement = nextElement[0]
                     }
                     nextElement.focus()
                     cursorToEnd(nextElement)
@@ -76,17 +66,13 @@
             else if (event.code === "ArrowUp" || (event.code === "Backspace" && (event.target.innerHTML === "" || event.target.innerHTML === "<br>")))
             {
                 event.preventDefault()
-                if (event.target.classList[0] === "rec-table-item")
+                if (event.target.className === "rec-table-item")
                 {
-                    let nextClassName = event.target.classList[1].split(",")[0] + "," + (parseInt(event.target.classList[1].split(",")[1]) - 1)
-                    let nextElement = document.getElementsByClassName(nextClassName)
-                    if (nextElement.length === 0)
+                    let nextId = event.target.id.split(",")[0] + "," + (parseInt(event.target.id.split(",")[1]) - 1)
+                    let nextElement = document.getElementById(nextId)
+                    if (nextElement === null)
                     {
-                        nextElement = document.getElementsByClassName("rec-table-category-index=" + event.target.classList[1].split("=")[1].split(",")[0])[0]
-                    }
-                    else
-                    {
-                        nextElement = nextElement[0]
+                        nextElement = document.getElementById("rec-table-category-index=" + event.target.id.split("=")[1].split(",")[0])
                     }
                     nextElement.focus()
                     cursorToEnd(nextElement)
@@ -94,7 +80,10 @@
                     // Delete an empty row
                     if (event.target.innerHTML === "" || event.target.innerHTML === "<br>")
                     {
-                        event.target.remove()
+                        event.target.removeEventListener("keydown", onFieldEdit)
+                        event.target.parentElement.remove()
+                        assignTableIds()
+                        reassignTableEventListeners()
                     }
                 }
             }
@@ -109,6 +98,35 @@
             range.collapse(false)
             select.removeAllRanges()
             select.addRange(range)
+        }
+
+        function assignTableIds ()
+        {
+            for (let tableIndex = 0; tableIndex < document.getElementsByClassName("recommendation-table").length; tableIndex++)
+            {
+                let table = document.getElementsByClassName("recommendation-table")[tableIndex]
+                table.id = "rec-table-index=" + tableIndex
+                table.getElementsByClassName("rec-table-category")[0].id = "rec-table-category-index=" + tableIndex
+
+                for (let itemIndex = 0; itemIndex < table.getElementsByClassName("rec-table-item").length; itemIndex++)
+                {
+                    table.getElementsByClassName("rec-table-item")[itemIndex].id = "rec-table-item-index=" + tableIndex + "," + itemIndex
+                }
+            }
+        }
+
+        function reassignTableEventListeners ()
+        {
+            for (let field of document.getElementsByClassName("rec-table-category"))
+            {
+                field.removeEventListener("keydown", onFieldEdit)
+                field.addEventListener("keydown", onFieldEdit)
+            }
+            for (let field of document.getElementsByClassName("rec-table-item"))
+            {
+                field.removeEventListener("keydown", onFieldEdit)
+                field.addEventListener("keydown", onFieldEdit)
+            }
         }
     </script>
     {% endif %}
