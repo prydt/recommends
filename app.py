@@ -71,6 +71,7 @@ def edit_user_page():
     else:
         # TODO add the request data to the user's database entry
         # TODO redirect the user to their own page
+        print(request.get_json())
         return "<p>editing complete</p>"
 
 # logouts user

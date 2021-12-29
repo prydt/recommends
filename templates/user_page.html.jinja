@@ -7,7 +7,7 @@
     <title>{{ user_data.username }} recommends...</title>
     <link rel="stylesheet" href="static/style.css">
 </head>
-<body onload="onload()">
+<body {% if is_editing %} onload="onload()" {% endif %}>
     <div id="content">
         <h1>Recommends</h1>
         <h2 id="user-recommends">{{ user_data.username }} recommends...</h2>
@@ -157,9 +157,53 @@
 
         function sendData ()
         {
-            // TODO exclude any blank (or <br>) fields; if a table only contains a blank (or <br>) th, exclude the table
+            let data = {
+                // Category names are stored as a list
+                // A dictionary could not be used because keys may overlap (categories can have the same name)
+                "recommendationCategories": [],
+                // Each element in recommendations is a list that corresponds to the category at the element's index
+                // For example, the list at recommendations[0] is for the category recommendationCategories[0]
+                "recommendations": []
+            }
 
-            window.location.href = "/{{ user_data.username }}"
+            let categoryCounts = {}
+
+            for (let table of document.getElementsByClassName("recommendation-table"))
+            {
+                let category = table.getElementsByClassName("rec-table-category")[0].innerHTML
+                // If the table does not have both a blank category and no recommendations
+                if (!((category === "" || category == "<br>") && table.getElementsByClassName("rec-table-item").length === 0))
+                {
+                    if (category === "<br>" || category === "")
+                    {
+                        category = ""
+                    }
+
+                    let recommendations = []
+                    for (let recommendation of table.getElementsByClassName("rec-table-item"))
+                    {
+                        recommendationStr = recommendation.innerHTML
+                        if (recommendationStr === "<br>")
+                        {
+                            recommendationStr = ""
+                        }
+                        recommendations.push(recommendationStr)
+                    }
+                    data["recommendationCategories"].push(category)
+                    data["recommendations"].push(recommendations)
+                }
+            }
+
+            fetch("/edit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                window.location.href = "/{{ user_data.username }}"
+            })
         }
     </script>
     {% endif %}
