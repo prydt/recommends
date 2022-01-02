@@ -6,6 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ user_data.username }} recommends...</title>
     <link rel="stylesheet" href="static/style.css">
+    <style>
+        table.recommendation-table tr:nth-child(even) {
+            background-color: hsl({{ user_data.hue }}, 100%, 95%);
+        }
+
+        #user-recommends {
+            color: hsl({{ user_data.hue }}, 100%, 50%);
+        }
+    </style>
 </head>
 <body {% if is_editing %} onload="onload()" {% endif %}>
     <div id="content">

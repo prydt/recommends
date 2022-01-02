@@ -1,5 +1,6 @@
 data = {
     "username": "cool-user-123",
+    "hue": 216,
     'recommendationCategories': ['Books', 'Anime', 'Video Games', 'Movies', 'YouTube Channels', 'Songs', 'TV/Netflix Shows', 'j', 'w'],
     'recommendations': [
         ['The Three-Body Problem', 'Dune', 'Mistborn', 'The Hobbit', 'The Giving Tree', 'Brave New World', 'Wuthering Heights', 'Green Eggs and Ham'],
