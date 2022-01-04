@@ -1,6 +1,7 @@
 from flask import Flask, session, send_file, request, flash, redirect, render_template
 from flask_login import LoginManager, UserMixin, login_required, logout_user, current_user, login_user
 from flask_sqlalchemy import SQLAlchemy
+from markupsafe import escape
 import nacl.pwhash
 import json
 
@@ -75,7 +76,10 @@ def edit_user_page():
     else:
         # TODO add the request data to the user's database entry
         # TODO redirect the user to their own page
-        print(request.get_json())
+        data = request.get_json(silent=True)
+        if data:
+            current_user.data = json.dumps(data)
+            db.session.commit()
         return "<p>editing complete</p>"
 
 # logouts user
