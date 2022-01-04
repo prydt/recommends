@@ -13,7 +13,13 @@
         {% if error is defined %}
             <p class="error"> {{ error }} </p>
         {% endif %}
+        {% if signup is defined %}
+        <h2>Sign Up</h2>
+        <form action="/signup" method="post">
+        {% else %}
+        <h2>Welcome Back</h2>
         <form action="/login" method="post">
+        {% endif %}
             <input type="text" placeholder="username" name="uname" id="username">
             <input placeholder="password" type="password" name="psw" id="password">
             <input type="submit" value="submit">

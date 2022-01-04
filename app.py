@@ -14,6 +14,8 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+RESTRICTED_NAMES = {'login', 'logout', 'signup', 'static', 'data', 'edit'}
+
 class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(15), unique=True)
@@ -45,6 +47,28 @@ def login():
     login_user(user)
     return redirect(f'/{user.username}')
 
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'GET':
+        return render_template('login.html.jinja', signup=True)
+
+    username = request.form['uname']
+    password = bytes(request.form['psw'], 'utf-8')
+    user = Users.query.filter_by(username=username).first()
+    if user is not None:
+        # if user exists already: error
+        return render_template('login.html.jinja', signup=True, error='error: the username is taken')
+
+    if username in RESTRICTED_NAMES:
+        return render_template('login.html.jinja', signup=True, error='error: the username is restricted')
+
+    new_user = Users(username=username, hash=nacl.pwhash.str(password), data=json.dumps({}))
+    db.session.add(new_user)
+    db.session.commit()
+
+    login_user(new_user)
+    return redirect(f'/{user.username}')
+    
 
 # main routes
 @app.route('/')
