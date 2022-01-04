@@ -59,13 +59,13 @@
             if (event.code === "Enter" || event.code === "NumpadEnter" || event.code === "ArrowDown")
             {
                 event.preventDefault()
-                if (event.target.className === "rec-table-category")
+                if (event.target.classList.contains("rec-table-category"))
                 {
                     let nextElement = document.getElementById("rec-table-item-index=" + event.target.id.split("=")[1] + ",0")
                     nextElement.focus()
                     cursorToEnd(nextElement)
                 }
-                else if (event.target.className === "rec-table-item")
+                else if (event.target.classList.contains("rec-table-item"))
                 {
                     let nextId = event.target.id.split(",")[0] + "," + (parseInt(event.target.id.split(",")[1]) + 1)
                     let nextElement = document.getElementById(nextId)
@@ -84,7 +84,7 @@
             else if (event.code === "ArrowUp" || (event.code === "Backspace" && (event.target.innerHTML === "" || event.target.innerHTML === "<br>")))
             {
                 event.preventDefault()
-                if (event.code === "Backspace" && event.target.className === "rec-table-category" && event.target.parentElement.parentElement.parentElement.getElementsByClassName("rec-table-item").length === 0)
+                if (event.code === "Backspace" && event.target.classList.contains("rec-table-category") && event.target.parentElement.parentElement.parentElement.getElementsByClassName("rec-table-item").length === 0)
                 {
                     // Delete an empty table
                     event.target.removeEventListener("keydown", onFieldEdit)
@@ -92,7 +92,7 @@
                     assignTableIds()
                     reassignTableEventListeners()
                 }
-                else if (event.target.className === "rec-table-item")
+                else if (event.target.classList.contains("rec-table-item"))
                 {
                     let nextId = event.target.id.split(",")[0] + "," + (parseInt(event.target.id.split(",")[1]) - 1)
                     let nextElement = document.getElementById(nextId)
