@@ -1,7 +1,7 @@
 from flask import Flask, session, send_file, request, flash, redirect, render_template
 from flask_login import LoginManager, UserMixin, login_required, logout_user, current_user, login_user
 from flask_sqlalchemy import SQLAlchemy
-from markupsafe import escape
+import markupsafe
 import nacl.pwhash
 import json
 
@@ -68,17 +68,40 @@ def user_page(user_name):
 @login_required
 def edit_user_page():
     # Edit a user's own Recommends page
-    
+
     if request.method == "GET":
         return render_template("user_page.html.jinja", user_data=json.loads(current_user.data), username=current_user.username, is_editing=True)
     else:
-        # TODO add the request data to the user's database entry
-        # TODO redirect the user to their own page
         data = request.get_json(silent=True)
-        if data:
+
+        # Validate data
+        if data and \
+        "hue" in data and type(data["hue"]) is int and \
+        "recommendationCategories" in data and type(data["recommendationCategories"]) is list and \
+        "recommendations" in data and type(data["recommendations"]) is list and \
+        len(data["recommendationCategories"]) == len(data["recommendations"]):
+
+            for i in range(len(data["recommendations"])):
+                if type(data["recommendationCategories"][i]) is not str or type(data["recommendations"][i]) is not list:
+                    print("bad data")
+                    return "<p>invalid data</p>"
+
+                data["recommendationCategories"][i] = str(markupsafe.escape(markupsafe.Markup(data["recommendationCategories"][i]).unescape()))
+
+                for j in range(len(data["recommendations"][i])):
+                    if type(data["recommendations"][i][j]) is not str:
+                        print("bad data")
+                        return "<p>invalid data</p>"
+
+                    data["recommendations"][i][j] = str(markupsafe.Markup(markupsafe.Markup(data["recommendations"][i][j]).unescape()))
+                
             current_user.data = json.dumps(data)
             db.session.commit()
-        return "<p>editing complete</p>"
+            return "<p>editing complete</p>"
+
+        print("bad data")
+        return "<p>invalid data</p>"
+
 
 # logouts user
 @app.route('/logout')

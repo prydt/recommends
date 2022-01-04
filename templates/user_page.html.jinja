@@ -182,7 +182,7 @@
         function updateHueSlider ()
         {
             let value = document.getElementById("hueSlider").value
-            document.getElementById("hueSliderText").innerHTML = "hue: " + value
+            document.getElementById("hueSliderText").innerHTML = "Hue: " + value
 
             document.getElementById("user-recommends").style.color = "hsl(" + value + ", 100%, 50%)"
 
@@ -195,7 +195,7 @@
         function sendData ()
         {
             let data = {
-                "hue": document.getElementById("hueSlider").value,
+                "hue": parseInt(document.getElementById("hueSlider").value),
                 // Category names are stored as a list
                 // A dictionary could not be used because keys may overlap (categories can have the same name)
                 "recommendationCategories": [],
@@ -208,6 +208,7 @@
             {
                 let category = table.getElementsByClassName("rec-table-category")[0].innerHTML
                 // If the table does not have both a blank category and no recommendations
+                // TODO if you add spaces to the end of a row, a wild <br> tag will appear. fix this
                 if (!((category === "" || category == "<br>") && table.getElementsByClassName("rec-table-item").length === 0))
                 {
                     if (category === "<br>" || category === "")
