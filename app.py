@@ -2,7 +2,7 @@ from flask import Flask, session, send_file, request, flash, redirect, render_te
 from flask_login import LoginManager, UserMixin, login_required, logout_user, current_user, login_user
 from flask_sqlalchemy import SQLAlchemy
 import nacl.pwhash
-import test_data
+import json
 
 app = Flask(__name__)
 #TODO make an ENV var
@@ -17,6 +17,7 @@ class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(15), unique=True)
     hash = db.Column(db.BINARY)
+    data = db.Column(db.TEXT)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -56,15 +57,21 @@ def user_page(user_name):
     # TODO user_data = jsonified data from the database
     # TODO editable = True if user is logged in and viewing their own page
 
-    return render_template("user_page.html.jinja", user_data=test_data.data, editable=True, is_editing=False)
+    user = Users.query.filter_by(username=user_name).first_or_404(description='invalid username!')
+
+    editable = False
+    if current_user.is_authenticated and current_user == user:
+        editable = True
+
+    return render_template("user_page.html.jinja", user_data=json.loads(user.data), username=user_name, editable=editable, is_editing=False)
 
 @app.route('/edit', methods=["GET", "POST"])
-# @login_required
+@login_required
 def edit_user_page():
     # Edit a user's own Recommends page
     # TODO user_data = jsonified data from the database
     if request.method == "GET":
-        return render_template("user_page.html.jinja", user_data=test_data.data, is_editing=True)
+        return render_template("user_page.html.jinja", user_data=json.loads(current_user.data), username=current_user.username, is_editing=True)
     else:
         # TODO add the request data to the user's database entry
         # TODO redirect the user to their own page
