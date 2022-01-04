@@ -67,7 +67,7 @@ def signup():
     db.session.commit()
 
     login_user(new_user)
-    return redirect(f'/{user.username}')
+    return redirect(f'/{username}')
     
 
 # main routes
@@ -136,5 +136,3 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-    # TODO make sure a user can't make their username "login", "logout", "signup", "static", "data", or any other url used specifically by the server
