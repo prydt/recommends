@@ -55,8 +55,6 @@ def index():
 @app.route('/<user_name>')
 def user_page(user_name):
     # Serves a user's Recommends page
-    # TODO user_data = jsonified data from the database
-    # TODO editable = True if user is logged in and viewing their own page
 
     user = Users.query.filter_by(username=user_name).first_or_404(description='invalid username!')
 
@@ -70,7 +68,7 @@ def user_page(user_name):
 @login_required
 def edit_user_page():
     # Edit a user's own Recommends page
-    # TODO user_data = jsonified data from the database
+    
     if request.method == "GET":
         return render_template("user_page.html.jinja", user_data=json.loads(current_user.data), username=current_user.username, is_editing=True)
     else:

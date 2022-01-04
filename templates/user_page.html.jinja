@@ -22,6 +22,8 @@
         <h2 id="user-recommends">{{ username }} recommends...</h2>
         {% if is_editing %}
         <button id="save-button" onclick="sendData()">Save</button>
+        <p><input type="range" autocomplete="off" min="0" max="255" value="{{ user_data.hue }}" class="slider" id="hueSlider"></p>
+        <p id="hueSliderText"></p>
         {% elif editable %}
         <a href="/edit"><button id="edit-button">Edit</button></a>
         {% endif %}
@@ -47,6 +49,9 @@
         {
             assignTableIds()
             reassignTableEventListeners()
+
+            document.getElementById("hueSlider").oninput = updateHueSlider
+            updateHueSlider()
         }
 
         function onFieldEdit (event)
@@ -146,7 +151,16 @@
 
                 for (let itemIndex = 0; itemIndex < table.getElementsByClassName("rec-table-item").length; itemIndex++)
                 {
-                    table.getElementsByClassName("rec-table-item")[itemIndex].id = "rec-table-item-index=" + tableIndex + "," + itemIndex
+                    let item = table.getElementsByClassName("rec-table-item")[itemIndex]
+                    item.id = "rec-table-item-index=" + tableIndex + "," + itemIndex
+                    if (itemIndex % 2 === 0)
+                    {
+                        item.classList.add("evenRow")
+                    }
+                    else
+                    {
+                        item.classList.remove("evenRow")
+                    }
                 }
             }
         }
@@ -165,9 +179,23 @@
             }
         }
 
+        function updateHueSlider ()
+        {
+            let value = document.getElementById("hueSlider").value
+            document.getElementById("hueSliderText").innerHTML = "hue: " + value
+
+            document.getElementById("user-recommends").style.color = "hsl(" + value + ", 100%, 50%)"
+
+            for (let evenRow of document.getElementsByClassName("evenRow"))
+            {
+                evenRow.style.backgroundColor = "hsl(" + value + ", 100%, 95%)"
+            }
+        }
+
         function sendData ()
         {
             let data = {
+                "hue": document.getElementById("hueSlider").value,
                 // Category names are stored as a list
                 // A dictionary could not be used because keys may overlap (categories can have the same name)
                 "recommendationCategories": [],
