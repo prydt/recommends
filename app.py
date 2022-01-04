@@ -110,14 +110,14 @@ def edit_user_page():
                     print("bad data")
                     return "<p>invalid data</p>"
 
-                data["recommendationCategories"][i] = str(markupsafe.escape(markupsafe.Markup(data["recommendationCategories"][i]).unescape()))
+                data["recommendationCategories"][i] = str(markupsafe.escape(markupsafe.Markup(data["recommendationCategories"][i]).unescape())).strip("\n")
 
                 for j in range(len(data["recommendations"][i])):
                     if type(data["recommendations"][i][j]) is not str:
                         print("bad data")
                         return "<p>invalid data</p>"
 
-                    data["recommendations"][i][j] = str(markupsafe.Markup(markupsafe.Markup(data["recommendations"][i][j]).unescape()))
+                    data["recommendations"][i][j] = str(markupsafe.Markup(markupsafe.Markup(data["recommendations"][i][j]).unescape())).strip("\n")
                 
             current_user.data = json.dumps(data)
             db.session.commit()

@@ -81,7 +81,7 @@
                     cursorToEnd(nextElement)
                 }
             }
-            else if (event.code === "ArrowUp" || (event.code === "Backspace" && (event.target.innerHTML === "" || event.target.innerHTML === "<br>")))
+            else if (event.code === "ArrowUp" || (event.code === "Backspace" && (event.target.innerText === "" || event.target.innerText === "\n")))
             {
                 event.preventDefault()
                 if (event.code === "Backspace" && event.target.classList.contains("rec-table-category") && event.target.parentElement.parentElement.parentElement.getElementsByClassName("rec-table-item").length === 0)
@@ -104,7 +104,7 @@
                     cursorToEnd(nextElement)
 
                     // Delete an empty row
-                    if (event.code === "Backspace" && (event.target.innerHTML === "" || event.target.innerHTML === "<br>"))
+                    if (event.code === "Backspace" && (event.target.innerText === "" || event.target.innerText === "\n"))
                     {
                         event.target.removeEventListener("keydown", onFieldEdit)
                         event.target.parentElement.remove()
@@ -156,10 +156,12 @@
                     if (itemIndex % 2 === 0)
                     {
                         item.classList.add("evenRow")
+                        item.style.backgroundColor = "hsl(" + document.getElementById("hueSlider").value + ", 100%, 95%)"
                     }
                     else
                     {
                         item.classList.remove("evenRow")
+                        item.style.backgroundColor = "inherit"
                     }
                 }
             }
@@ -206,24 +208,14 @@
 
             for (let table of document.getElementsByClassName("recommendation-table"))
             {
-                let category = table.getElementsByClassName("rec-table-category")[0].innerHTML
+                let category = table.getElementsByClassName("rec-table-category")[0].innerText
                 // If the table does not have both a blank category and no recommendations
-                // TODO if you add spaces to the end of a row, a wild <br> tag will appear. fix this
-                if (!((category === "" || category == "<br>") && table.getElementsByClassName("rec-table-item").length === 0))
+                if (!((category === "" || category === "\n") && table.getElementsByClassName("rec-table-item").length === 0))
                 {
-                    if (category === "<br>" || category === "")
-                    {
-                        category = ""
-                    }
-
                     let recommendations = []
                     for (let recommendation of table.getElementsByClassName("rec-table-item"))
                     {
-                        recommendationStr = recommendation.innerHTML
-                        if (recommendationStr === "<br>")
-                        {
-                            recommendationStr = ""
-                        }
+                        recommendationStr = recommendation.innerText
                         recommendations.push(recommendationStr)
                     }
                     data["recommendationCategories"].push(category)
