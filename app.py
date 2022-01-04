@@ -56,8 +56,7 @@ def user_page(user_name):
     # TODO user_data = jsonified data from the database
     # TODO editable = True if user is logged in and viewing their own page
 
-    # TODO colors and hsv to rgb conversion
-    return render_template("user_page.html.jinja", user_data=test_data.data, editable=True, is_editing=False, colors=["fffff", "000000" ])
+    return render_template("user_page.html.jinja", user_data=test_data.data, editable=True, is_editing=False)
 
 @app.route('/edit', methods=["GET", "POST"])
 # @login_required
