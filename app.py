@@ -28,17 +28,15 @@ def login():
         return render_template('login.html.jinja')
 
     username = request.form['uname']
-    password = request.form['psw']
-    print(f'username = {username}, password = {password}')
+    password = bytes(request.form['psw'], 'utf-8')
     user = Users.query.filter_by(username=username).first()
-    print(user)
     if user is None:
-        # flash('error: invalid username', 'error')
         return render_template('login.html.jinja', error='error: invalid username')
 
-    h = nacl.pwhash.str(bytes(password, 'utf-8'))
-    if h != user.hash:
-        # flash('error: invalid password', 'error')
+    try:
+        if nacl.pwhash.verify(user.hash, password):
+            pass
+    except:
         return render_template('login.html.jinja', error='error: invalid password')
     
     # username and password are valid
@@ -79,6 +77,7 @@ def edit_user_page():
 @login_required
 def logout():
     logout_user()
+    return redirect('/')
 
 if __name__ == '__main__':
     app.run(debug=True)
